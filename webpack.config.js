@@ -4,6 +4,7 @@ const CopyWebpackPlugin = require("copy-webpack-plugin");
 const CustomFunctionsMetadataPlugin = require("custom-functions-metadata-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const webpack = require("webpack");
+const path = require("path");
 
 const urlDev="https://localhost:3000/";
 const urlProd="https://www.contoso.com/"; // CHANGE THIS TO YOUR PRODUCTION DEPLOYMENT LOCATION
@@ -18,6 +19,10 @@ module.exports = async (env, options) => {
       polyfill: "@babel/polyfill",
       taskpane: "./src/taskpane/taskpane.js",
       commands: "./src/commands/commands.js"
+    },
+    output: {
+      path: path.resolve(process.cwd(), 'dist'),
+      publicPath: '',
     },
     resolve: {
       extensions: [".ts", ".tsx", ".html", ".js"]
@@ -58,14 +63,16 @@ module.exports = async (env, options) => {
         template: "./src/taskpane/taskpane.html",
         chunks: ["polyfill", "taskpane", "functions", "commands"]
       }),
-      new CopyWebpackPlugin([
+      new CopyWebpackPlugin({
+        patterns: [
         {
           to: "taskpane.css",
           from: "./src/taskpane/taskpane.css"
         }
-      ]),
+      ]}),
       
-      new CopyWebpackPlugin([
+      new CopyWebpackPlugin(
+        { patterns: [
         {
           to: "taskpane.css",
           from: "./src/taskpane/taskpane.css"
@@ -81,7 +88,8 @@ module.exports = async (env, options) => {
             }
           }
         }
-      ])
+      ]}
+      )
     ],
     devServer: {
       headers: {

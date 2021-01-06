@@ -15,11 +15,15 @@ module.exports = async (env, options) => {
             polyfill: "babel-polyfill",
             taskpane: path.resolve(__dirname, './src/test-taskpane.ts'),
         },
-        resolve: {
-            extensions: [".ts", ".tsx", ".html", ".js"]
+        output: {
+          path: path.resolve(process.cwd(), 'dist'),
+          publicPath: '',
         },
-        node: {
-            child_process: 'empty'
+        resolve: {
+            extensions: [".ts", ".tsx", ".html", ".js"],
+            fallback: {
+                child_process: 'empty'
+            },
         },
         module: {
             rules: [
@@ -62,12 +66,14 @@ module.exports = async (env, options) => {
                 template: path.resolve(__dirname, './src/test-taskpane.html'),
                 chunks: ["polyfill", "taskpane", "functions", "commands"]
             }),
-            new CopyWebpackPlugin([
+            new CopyWebpackPlugin(
                 {
-                    to: "taskpane.css",
-                    from: path.resolve(__dirname, './../src/taskpane/taskpane.css')
-                }
-            ]),
+                    patterns: [
+                        {
+                            to: "taskpane.css",
+                            from: path.resolve(__dirname, './../src/taskpane/taskpane.css')
+                        }
+            ]}),
         ],
         devServer: {
             headers: {
